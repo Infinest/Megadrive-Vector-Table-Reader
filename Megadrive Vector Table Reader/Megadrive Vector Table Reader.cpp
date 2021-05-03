@@ -50,7 +50,7 @@ int parseROM(std::ifstream& fileStream, char* filePath)
 		{
 			output << filePath << "\n";
 			fileStream.seekg(0x0);
-			for (int i = 0; i < 64; i++)
+			for (int i = 0; i < VECTORS.size(); i++)
 			{
 				uint32_t offset;
 				fileStream.read(reinterpret_cast<char*>(&offset), sizeof(offset));

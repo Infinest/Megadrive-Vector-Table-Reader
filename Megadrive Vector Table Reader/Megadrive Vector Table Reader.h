@@ -6,7 +6,7 @@
 #include <intrin.h>
 
 const std::string MD_ROM_IDENTIFIER = "SEGA";
-const std::string VECTORS[64] = {
+const std::vector<std::string> VECTORS = {
 "Initial Stack Address                     ",
 "Start of program Code                     ",
 "Bus error                                 ",
