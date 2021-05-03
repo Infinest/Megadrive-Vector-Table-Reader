@@ -3,7 +3,7 @@ This is a small tool which will parse the 68k vector table of a specified Mega D
 
 ## Sample usage
 ```bash
-Megadrive_Vector_Table_Reader.exe" example.md
+Megadrive_Vector_Table_Reader.exe example.md
 ```
 
 ## Sample output
