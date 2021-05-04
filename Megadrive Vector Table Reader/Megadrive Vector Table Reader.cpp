@@ -52,10 +52,10 @@ int parseROM(std::ifstream& fileStream, char* filePath)
 			fileStream.seekg(0x0);
 			for (int i = 0; i < VECTORS.size(); i++)
 			{
+				output << "0x" << std::setfill('0') << std::setw(3) << fileStream.tellg() << " ";
 				uint32_t offset;
 				fileStream.read(reinterpret_cast<char*>(&offset), sizeof(offset));
 				offset = _byteswap_ulong(offset);
-				output << "0x" << std::setfill('0') << std::setw(3) << fileStream.tellg() << " ";
 				output << VECTORS[i] + ": 0x" << std::setfill('0') << std::setw(8) << std::hex << (offset) << std::endl;
 			}
 		}
