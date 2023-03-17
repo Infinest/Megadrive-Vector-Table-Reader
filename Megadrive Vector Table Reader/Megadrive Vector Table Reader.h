@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <sstream>
 #include <intrin.h>
+#include <map>
+#include <optional>
 
 const std::string MD_ROM_IDENTIFIER = "SEGA";
 const std::vector<std::string> VECTORS = {
@@ -73,5 +75,23 @@ const std::vector<std::string> VECTORS = {
 "Reserved (NOT USED)                       "
 };
 
+const uint8_t PARAM_PREFIX = 1;
+const uint8_t PARAM_OFFSET = 2;
+const uint8_t PARAM_BIT_PADDING = 3;
+const std::map<std::string, uint8_t> VALID_ARGUMENTS = {
+	{"-p", PARAM_PREFIX},
+	{"--prefix", PARAM_PREFIX},
+	{"-o", PARAM_OFFSET},
+	{"--offset", PARAM_OFFSET},
+	{"-b", PARAM_BIT_PADDING},
+	{"--bit-padding", PARAM_BIT_PADDING}
+};
+
+std::ifstream fileStream;
+std::optional<uint8_t> offset;
+std::string prefix = "0x";
+uint8_t bitPadding = 32;
+
 int main(int argumentCount, char* arguments[]);
-int parseROM(std::ifstream& fileStream, char* filePath);
+bool parseArgs(std::vector<std::string> args);
+bool parseROM();
