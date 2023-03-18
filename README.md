@@ -18,8 +18,6 @@ mdvtr.exe "Streets of Rage 2 (USA).md" -p "$" -b 16 -o 0x4
 $0208
 ```
 
-Example
-
 ## Sample output
 ```
 example.md
