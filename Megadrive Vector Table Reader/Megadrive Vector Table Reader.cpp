@@ -15,7 +15,7 @@ int main(int argumentCount, char* arguments[])
 		exitCode = EXIT_FAILURE;
 	}
 
-	return EXIT_SUCCESS;
+	return exitCode;
 }
 
 bool parseArgs(std::vector<std::string> args, uint8_t &exitCode)
