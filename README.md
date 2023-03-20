@@ -10,7 +10,8 @@ Usage: mdvtr.exe file [options]
     -o, --offset:            If specified, only outputs the vector at the given offset.
                              Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX
     -p, --prefix:            Specify the prefix for the output vector/s [default: "0x"]
-    -i, --ignore-identifier: Disables validating input files by checking for string "SEGA" at offset 0x100
+    -i, --ignore-identifier: Disables validating input files by checking for string "SEGA" at offset 0x100.
+    -v, --version:           Display version info.
 ```
 
 Sample usage:
