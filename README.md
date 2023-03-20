@@ -5,14 +5,15 @@ This is a small tool which will parse the 68k vector table of a specified Mega D
 ```
 Usage: mdvtr.exe file [options]
   options:
-    -p, --prefix:      Specify the prefix for the output vector/s [default: "0x"]
-    -b, --bit-padding: Determines the padding for the output vector/s.
-                       Bit padding must be supplied in decimal, must be a multiple of 4 and the following must apply 0 <= padding <= 32. [default: 32]
-    -o, --offset:      If specified, only outputs the vector at the given offset.
-                       Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX
+    -b, --bit-padding:       Determines the padding for the output vector/s.
+                             Bit padding must be supplied in decimal, must be a multiple of 4 and the following must apply 0 <= padding <= 32. [default: 32]
+    -o, --offset:            If specified, only outputs the vector at the given offset.
+                             Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX
+    -p, --prefix:            Specify the prefix for the output vector/s [default: "0x"]
+    -i, --ignore-identifier: Disables validating input files by checking for string "SEGA" at offset 0x100
 ```
 
-Same usage:
+Sample usage:
 ```batch
 mdvtr.exe "Streets of Rage 2 (USA).md" -p "$" -b 16 -o 0x4
 $0208
