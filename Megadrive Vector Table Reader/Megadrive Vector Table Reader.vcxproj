@@ -147,6 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Megadrive Vector Table Reader.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Megadrive Vector Table Reader.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
