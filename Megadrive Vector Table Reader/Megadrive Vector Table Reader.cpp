@@ -22,11 +22,12 @@ bool parseArgs(std::vector<std::string> args)
 	{
 		std::cout << "Usage: mdvtr.exe file [options]" << std::endl;
 		std::cout << std::noskipws << "  options:" << std::endl;
-		std::cout << std::noskipws << "    -p, --prefix:      Specify the prefix for the output vector/s [default: \"0x\"]" << std::endl;
-		std::cout << std::noskipws << "    -b, --bit-padding: Determines the padding for the output vector/s." << std::endl;
-		std::cout << std::noskipws << "                       Bit padding must be supplied in decimal, must be a multiple of 4 and the following must apply 0 <= padding <= 32. [default: 32]" << std::endl;
-		std::cout << std::noskipws << "    -o, --offset:      If specified, only outputs the vector at the given offset." << std::endl;
-		std::cout << std::noskipws << "                       Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX" << std::endl;
+		std::cout << std::noskipws << "    -b, --bit-padding:       Determines the padding for the output vector/s." << std::endl;
+		std::cout << std::noskipws << "                             Bit padding must be supplied in decimal, must be a multiple of 4 and the following must apply 0 <= padding <= 32. [default: 32]" << std::endl;
+		std::cout << std::noskipws << "    -o, --offset:            If specified, only outputs the vector at the given offset." << std::endl;
+		std::cout << std::noskipws << "                             Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX" << std::endl;
+		std::cout << std::noskipws << "    -p, --prefix:            Specify the prefix for the output vector/s [default: \"0x\"]" << std::endl;
+		std::cout << std::noskipws << "    -i, --ignore-identifier: Disables validating input files by checkix for string \"SEGA\" at offset 0x100" << std::endl;
 		return false;
 	}
 
@@ -50,31 +51,48 @@ bool parseArgs(std::vector<std::string> args)
 				return false;
 			}
 
+			std::string inputParam;
 			switch (VALID_ARGUMENTS.at(args[i]))
 			{
 			case PARAM_PREFIX:
-				prefix = args[++i];
+				prefix = (++i < args.size() ? args[i] : "");
 				break;
 			case PARAM_OFFSET:
+				inputParam = (++i < args.size() ? args[i] : "");
+
 				try {
-					offset = (uint8_t)std::stoul(args[++i], nullptr, 16);
+					if (inputParam.length() == 0)
+					{
+						throw std::invalid_argument("No offset specified.");
+					}
+
+					unsigned long inputLong = std::stoul(inputParam, nullptr, 16);
 
 					// Range 0x0 to 0xfc, Only multiples of 0x4
-					if (offset.value() < 0x0 || 0xfc < offset.value() || offset.value() % 0x4 != 0)
+					if (0xfc < inputLong || inputLong % 0x4 != 0)
 					{
 						throw std::invalid_argument("Invalid number specified.");
 					}
+
+					offset = (uint8_t)inputLong;
 				}
 				catch (const std::exception&)
 				{
-					std::cout << "Invalid offset \"" << args[i] << "\" specified. Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX" << std::endl;
+					std::cout << "Invalid offset \"" << inputParam << "\" specified. Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX" << std::endl;
 					return false;
 				}
 				break;
 			case PARAM_BIT_PADDING:
+				inputParam = (++i < args.size() ? args[i] : "");
+
 				try
 				{
-					bitPadding = (uint8_t)std::stoul(args[++i], nullptr, 10);
+					if (inputParam.length() == 0)
+					{
+						throw std::invalid_argument("No padding specified.");
+					}
+
+					bitPadding = (uint8_t)std::stoul(inputParam, nullptr, 10);
 
 					// Range 0 to 32, Only multiples of 4
 					if (bitPadding < 0 || 32 < bitPadding || bitPadding % 4 != 0)
@@ -84,9 +102,12 @@ bool parseArgs(std::vector<std::string> args)
 				}
 				catch (const std::exception&)
 				{
-					std::cout << "Invalid bit padding \"" << args[i] << "\" specified. Bit padding must be supplied in decimal, must be a multiple of 4 and the following must apply 0 <= padding <= 32." << std::endl;
+					std::cout << "Invalid bit padding \"" << inputParam << "\" specified. Bit padding must be supplied in decimal, must be a multiple of 4 and the following must apply 0 <= padding <= 32." << std::endl;
 					return false;
 				}
+				break;
+			case PARAM_IGNORE_IDENTIFIER:
+				checkIdentifier = false;
 				break;
 			}
 		}
@@ -100,21 +121,25 @@ bool parseROM()
 	fileStream.seekg(0, fileStream.end);
 	std::streampos fileLength = fileStream.tellg();
 
-	if (fileLength < 0x260)
+	if (fileLength < 0x200)
 	{
-		std::cout << "The file specified is not a valid Mega Drive ROM." << std::endl;
+		std::cout << "The file specified is not a valid Mega Drive ROM. The file size needs exceed 512 bytes." << std::endl;
 		return false;
 	}
 
-	fileStream.seekg(0x100);
-	std::vector<char> buffer(4);
-	fileStream.read(&buffer[0], buffer.size());
-	std::string SEGA(buffer.begin(), buffer.end());
-
-	if (SEGA != MD_ROM_IDENTIFIER)
+	if (checkIdentifier)
 	{
-		std::cout << "The file specified is not a valid Mega Drive ROM." << std::endl;
-		return false;
+		fileStream.seekg(0x100);
+		std::vector<char> buffer(4);
+		fileStream.read(&buffer[0], buffer.size());
+		std::string SEGA(buffer.begin(), buffer.end());
+
+		if (SEGA != MD_ROM_IDENTIFIER)
+		{
+			std::cout << "The file specified is not a valid Mega Drive ROM. Valid Mega Drive ROMs should have contain the word \"SEGA\" at offset 0x100." << std::endl;
+			std::cout << "To ignore this check use the parameter -i, --ignore-identifier." << std::endl;
+			return false;
+		}
 	}
 
 	std::stringstream output;

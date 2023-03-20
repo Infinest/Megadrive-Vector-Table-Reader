@@ -78,19 +78,23 @@ const std::vector<std::string> VECTORS = {
 const uint8_t PARAM_PREFIX = 1;
 const uint8_t PARAM_OFFSET = 2;
 const uint8_t PARAM_BIT_PADDING = 3;
+const uint8_t PARAM_IGNORE_IDENTIFIER = 4;
 const std::map<std::string, uint8_t> VALID_ARGUMENTS = {
 	{"-p", PARAM_PREFIX},
 	{"--prefix", PARAM_PREFIX},
 	{"-o", PARAM_OFFSET},
 	{"--offset", PARAM_OFFSET},
 	{"-b", PARAM_BIT_PADDING},
-	{"--bit-padding", PARAM_BIT_PADDING}
+	{"--bit-padding", PARAM_BIT_PADDING},
+	{"-i", PARAM_IGNORE_IDENTIFIER},
+	{"--ignore-identifier", PARAM_IGNORE_IDENTIFIER}
 };
 
 std::ifstream fileStream;
 std::optional<uint8_t> offset;
 std::string prefix = "0x";
 uint8_t bitPadding = 32;
+bool checkIdentifier = true;
 
 int main(int argumentCount, char* arguments[]);
 bool parseArgs(std::vector<std::string> args);
