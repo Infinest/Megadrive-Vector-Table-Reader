@@ -36,7 +36,7 @@ bool parseArgs(std::vector<std::string> args)
 		// The first parameter is always supposed to be the target file path
 		if (i == 0)
 		{
-			fileStream.open(args[i]);
+			fileStream.open(args[i], std::ios::binary);
 			if (!fileStream.good())
 			{
 				std::cout << "Invalid file specified." << std::endl;
@@ -136,7 +136,7 @@ bool parseROM()
 
 		if (SEGA != MD_ROM_IDENTIFIER)
 		{
-			std::cout << "The file specified is not a valid Mega Drive ROM. Valid Mega Drive ROMs should have contain the word \"SEGA\" at offset 0x100." << std::endl;
+			std::cout << "The file specified is not a valid Mega Drive ROM. Valid Mega Drive ROMs should contain the word \"SEGA\" at offset 0x100." << std::endl;
 			std::cout << "To ignore this check use the parameter -i, --ignore-identifier." << std::endl;
 			return false;
 		}
