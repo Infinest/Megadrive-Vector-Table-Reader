@@ -3,20 +3,22 @@
 int main(int argumentCount, char* arguments[])
 {
 	const std::vector<std::string> args(arguments + 1, arguments + argumentCount);
+	uint8_t exitCode = EXIT_FAILURE;
 
-	if (!parseArgs(args))
+	if (!parseArgs(args, exitCode) || exitCode == EXIT_FAILURE)
 	{
-		return EXIT_FAILURE;
+		return exitCode;
 	}
 
 	if (!parseROM())
 	{
-		return EXIT_FAILURE;
+		exitCode = EXIT_FAILURE;
 	}
+
 	return EXIT_SUCCESS;
 }
 
-bool parseArgs(std::vector<std::string> args)
+bool parseArgs(std::vector<std::string> args, uint8_t &exitCode)
 {
 	if (args.size() == 0)
 	{
@@ -27,7 +29,8 @@ bool parseArgs(std::vector<std::string> args)
 		std::cout << std::noskipws << "    -o, --offset:            If specified, only outputs the vector at the given offset." << std::endl;
 		std::cout << std::noskipws << "                             Offset must be supplied in hexadecimal, must be a multiple of 0x4 and the following must apply 0x0 <= offset <= 0xfc. Allowed syntax: 0xXX or XX" << std::endl;
 		std::cout << std::noskipws << "    -p, --prefix:            Specify the prefix for the output vector/s [default: \"0x\"]" << std::endl;
-		std::cout << std::noskipws << "    -i, --ignore-identifier: Disables validating input files by checking for string \"SEGA\" at offset 0x100" << std::endl;
+		std::cout << std::noskipws << "    -i, --ignore-identifier: Disables validating input files by checking for string \"SEGA\" at offset 0x100." << std::endl;
+		std::cout << std::noskipws << "    -v, --version:           Display version info." << std::endl;
 		return false;
 	}
 
@@ -36,6 +39,13 @@ bool parseArgs(std::vector<std::string> args)
 		// The first parameter is always supposed to be the target file path
 		if (i == 0)
 		{
+			if (VALID_ARGUMENTS.contains(args[i]) && VALID_ARGUMENTS.at(args[i]) == PARAM_VERSION)
+			{
+				displayVersion();
+				exitCode = EXIT_SUCCESS;
+				return false;
+			}
+
 			fileStream.open(args[i], std::ios::binary);
 			if (!fileStream.good())
 			{
@@ -109,10 +119,15 @@ bool parseArgs(std::vector<std::string> args)
 			case PARAM_IGNORE_IDENTIFIER:
 				checkIdentifier = false;
 				break;
+			case PARAM_VERSION:
+				displayVersion();
+				exitCode = EXIT_SUCCESS;
+				return false;
 			}
 		}
 	}
 
+	exitCode = EXIT_SUCCESS;
 	return true;
 }
 
@@ -182,4 +197,16 @@ bool parseROM()
 	}
 	std::cout << output.rdbuf();
 	return true;
+}
+
+void displayVersion()
+{
+	std::cout << std::noskipws << "    _/_/_/                _/_/  _/                                  _/    " << std::endl;
+	std::cout << std::noskipws << "     _/    _/_/_/      _/          _/_/_/      _/_/      _/_/_/  _/_/_/_/ " << std::endl;
+	std::cout << std::noskipws << "    _/    _/    _/  _/_/_/_/  _/  _/    _/  _/_/_/_/  _/_/        _/      " << std::endl;
+	std::cout << std::noskipws << "   _/    _/    _/    _/      _/  _/    _/  _/            _/_/    _/       " << std::endl;
+	std::cout << std::noskipws << "_/_/_/  _/    _/    _/      _/  _/    _/    _/_/_/  _/_/_/        _/_/    " << std::endl;
+	std::cout << std::endl;
+	std::cout << std::noskipws << "MEGA DRIVE VECTOR TABLE READER v1.2 2023-03-20" << std::endl;
+	std::cout << std::noskipws << "https://github.com/Infinest/Megadrive-Vector-Table-Reader" << std::endl;
 }

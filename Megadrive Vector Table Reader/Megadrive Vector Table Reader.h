@@ -79,6 +79,7 @@ const uint8_t PARAM_PREFIX = 1;
 const uint8_t PARAM_OFFSET = 2;
 const uint8_t PARAM_BIT_PADDING = 3;
 const uint8_t PARAM_IGNORE_IDENTIFIER = 4;
+const uint8_t PARAM_VERSION = 5;
 const std::map<std::string, uint8_t> VALID_ARGUMENTS = {
 	{"-p", PARAM_PREFIX},
 	{"--prefix", PARAM_PREFIX},
@@ -87,7 +88,9 @@ const std::map<std::string, uint8_t> VALID_ARGUMENTS = {
 	{"-b", PARAM_BIT_PADDING},
 	{"--bit-padding", PARAM_BIT_PADDING},
 	{"-i", PARAM_IGNORE_IDENTIFIER},
-	{"--ignore-identifier", PARAM_IGNORE_IDENTIFIER}
+	{"--ignore-identifier", PARAM_IGNORE_IDENTIFIER},
+	{"-v", PARAM_VERSION},
+	{"--version", PARAM_VERSION}
 };
 
 std::ifstream fileStream;
@@ -97,5 +100,6 @@ uint8_t bitPadding = 32;
 bool checkIdentifier = true;
 
 int main(int argumentCount, char* arguments[]);
-bool parseArgs(std::vector<std::string> args);
+bool parseArgs(std::vector<std::string> args, uint8_t &exitCode);
 bool parseROM();
+void displayVersion();
